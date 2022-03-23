@@ -115,15 +115,31 @@ module.exports = () => {
 
     // -------------------------------------------- { user exercises } -----------------------------------------------------//
     route.get("/users/:id/logs", (req, res) => {
-        let params = req.params, body = req.body;
+        let params = req.params, body = req.body, query = req.query;
         if (!params.id) return res.json({error: "No id was given"});
 
         let _user = user.getById(params.id);
         if (!_user) return res.json({error: "No user was found"});
 
-        return res.json(data.getLogsOnlyById(params.id));
+        let logData = data.getLogsOnlyById(params.id);
+        if(logData.log.length) logData.log = sortLogs(logData.log, query.from, query.to, query.limit);
+        return res.json(logData);
     })
     return route;
+}
+
+function sortLogs(logs, from, to, limit) {
+  let result = logs;
+  console.log(result, from, to);
+  if(from && isValidDate(from)) result = result.filter(l => new Date(l.date) > new Date(from));
+  if(to && isValidDate(to)) result = result.filter(l => new Date(l.date) < new Date(to));
+  if(!isNaN(limit)) result.length = Number(limit);
+
+  return result;
+}
+
+function isValidDate(date) {
+  return new Date(date).toString() !== "Invalid Date";
 }
 
 function buildUser(username) {
