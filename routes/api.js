@@ -53,8 +53,8 @@ const builder = {
     exercise: (desc, duration, date) => {
         return {
             description: desc,
-            duration: isNaN(duration) ? 0 : duration,
-            date: new Date(date).toString() === "Invalid Date" ? `${new Date().getDay()} ${new Date().getMonth()} ${new Date().getDate()} ${new Date().getFullYear()}` : `${new Date(date).getDay()} ${new Date(date).getMonth()} ${new Date(date).getDate()} ${new Date(date).getFullYear()}`
+            duration: isNaN(duration) ? 0 : Number(duration),
+            date: new Date(date).toString() === "Invalid Date" ? `${new Date().toString().split("").filter((_, x) => x < 15).join("")}` : `${new Date(date).toString().split("").filter((_, x) => x < 15).join("")}`
         }
     }
 }
@@ -78,7 +78,7 @@ const exercise = {
     add: (userId, desc, duration, date) => {
         const _user = user.getById(userId);
         if (!_user) return false;
-        const _exercise = builder.exercise(desc, duration, date);
+        let _exercise = builder.exercise(desc, duration, date);
         const test = log.push(userId, _exercise);
         return {...data.getUserOnlyById(userId), ..._exercise};
     }
@@ -86,7 +86,7 @@ const exercise = {
 
 module.exports = () => {
     route.get("/", (req, res) => {
-        res.send("Hello there");
+        res.json({owo: 1});
     });
 
     // ------------------------------------------------- { users } --------------------------------------------------------//
